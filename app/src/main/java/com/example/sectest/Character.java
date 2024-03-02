@@ -34,7 +34,7 @@ public class Character {
         return ship[0].getWidth();
     }
     public void resetShip() {
-        x = 100;
-        y = 500;
+        x = 200;
+        y = 800;
     }
 }

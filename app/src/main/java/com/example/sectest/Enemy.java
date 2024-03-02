@@ -27,6 +27,6 @@ public class Enemy {
     }
     public void resetEnemyShip() {
         x = MainGame.screenWidth/2 - getEnemyShipWidth()/2;
-        y = 0;
+        y = 200;
     }
 }

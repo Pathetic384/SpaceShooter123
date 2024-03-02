@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -19,7 +21,11 @@ import java.util.ArrayList;
 
 public class MainGame extends View {
     Context context;
-    Bitmap background;
+    Bitmap background, scoreImg;
+    Bitmap layer1, layer2, layer3, layer4;
+    int y2 = 0, y3 = 0, y4 = 0;
+    int score;
+    Paint scorePaint;
     Handler handler;
     static int screenWidth, screenHeight;
     Character character;
@@ -48,7 +54,20 @@ public class MainGame extends View {
         character = new Character(context);
         enemy = new Enemy(context);
         background = BitmapFactory.decodeResource(context.getResources(), R.drawable.bg1);
+        scoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.score);
+        //layers
+        layer1 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
+        layer2 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
+        layer3 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
+        layer4 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
+
         handler = new Handler();
+
+        score = 0;
+        scorePaint = new Paint();
+        scorePaint.setColor(Color.YELLOW);
+        scorePaint.setTextSize(80);
+        scorePaint.setTextAlign(Paint.Align.LEFT);
 
         timer = new CountDownTimer(500, 20) {
             @Override
@@ -56,6 +75,7 @@ public class MainGame extends View {
             }
             @Override
             public void onFinish() {
+
                 try{
                     ShootBullet();
                 }catch(Exception e){
@@ -68,7 +88,22 @@ public class MainGame extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         //background
-        canvas.drawBitmap(background, 0,0 ,null);
+        canvas.drawBitmap(layer1, 0,0 ,null);
+        y2 += 3;
+        canvas.drawBitmap(layer2, 0, y2, null);
+        canvas.drawBitmap(layer2, 0, y2 - screenHeight, null);
+        if(y2 ==  screenHeight) y2 = 0;
+        y3 += 4;
+        canvas.drawBitmap(layer3, 0, y3, null);
+        canvas.drawBitmap(layer3, 0, y3 - screenHeight, null);
+        if(y3 ==  screenHeight) y3 = 0;
+        y4 += 5;
+        canvas.drawBitmap(layer4, 0, y4, null);
+        canvas.drawBitmap(layer4, 0, y4 - screenHeight, null);
+        if(y4 ==  screenHeight) y4 = 0;
+
+        canvas.drawBitmap(scoreImg, 15,15 ,null);
+        canvas.drawText(String.valueOf(score), scoreImg.getWidth() + 40, 70, scorePaint);
 
         //character
         if(character.x > screenWidth - character.getShipWidth())
@@ -83,7 +118,7 @@ public class MainGame extends View {
         //enemy
         canvas.drawBitmap(enemy.getEnemyShip(), enemy.x, enemy.y, null);
 
-        //explosion
+   /*     //explosion
         for(int i=0; i<explosions.size();i++) {
             canvas.drawBitmap(explosions.get(i).getExplosion(), explosions.get(i).x, explosions.get(i).y, null);
             explosions.get(i).frame++;
@@ -101,6 +136,7 @@ public class MainGame extends View {
                     && bullets.get(i).y + bullets.get(i).getBulletHeight() <= enemy.y +enemy.getEnemyShipHeight() ) {
                 explosions.add(new Explosion(context, enemy.x + 30, enemy.y + 100));
                 bullets.remove(i);
+                score += 10;
             }
         }
 
@@ -116,7 +152,7 @@ public class MainGame extends View {
                 explosions.add(new Explosion(context, character.x + 30, character.y + 20));
                 e_bullets.remove(i);
             }
-        }
+        } */
 
         //reset drawing
         handler.postDelayed(runnable, 10);
