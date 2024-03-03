@@ -1,7 +1,10 @@
 package com.example.sectest;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,11 +23,13 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 
 public class MainGame extends View {
+    boolean paused = false;
+    boolean dead = false;
     Context context;
     Bitmap scoreImg, hp;
     Bitmap layer1, layer2, layer3, layer4;
     int y2 = 0, y3 = 0, y4 = 0;
-    int score;
+    public static int score;
     int lifes;
     Paint scorePaint;
     Handler handler;
@@ -85,6 +90,8 @@ public class MainGame extends View {
                 }
             }
         }.start();
+
+        handler = new Handler();
     }
 
     @Override
@@ -104,21 +111,43 @@ public class MainGame extends View {
         canvas.drawBitmap(layer4, 0, y4 - screenHeight, null);
         if(y4 ==  screenHeight) y4 = 0;
 
+        //lifes
         for(int i = 1; i<= lifes; i++) {
             canvas.drawBitmap(hp, 15, screenHeight - 70 - (hp.getHeight() + 10)*i, null);
+        }
+        if(lifes == 0 && !dead) {
+            dead = true;
+            character.charFrame = 8;
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    handler = null;
+                    paused = true;
+                    Intent intent = new Intent(context, LoseScreen.class);
+                    ((Activity) context).finish();
+                    context.startActivity(intent);
+                }
+            }, 2500);
         }
         canvas.drawBitmap(scoreImg, 15,15 ,null);
         canvas.drawText(String.valueOf(score), scoreImg.getWidth() + 40, 70, scorePaint);
 
         //character
-        if(character.x > screenWidth - character.getShipWidth())
-            character.x = screenWidth - character.getShipWidth();
-        else if(character.x<0) character.x = 0;
-        if(character.y <= 0) character.y = 0;
-        else if(character.y + character.getShipHeight() > screenHeight) character.y = screenHeight - character.getShipHeight();
-        character.charFrame++;
-        if(character.charFrame > 7) character.charFrame = 0;
-        canvas.drawBitmap(character.getShip(character.charFrame), character.x, character.y, null);
+        if(!dead) {
+            if (character.x > screenWidth - character.getShipWidth())
+                character.x = screenWidth - character.getShipWidth();
+            else if (character.x < 0) character.x = 0;
+            if (character.y <= 0) character.y = 0;
+            else if (character.y + character.getShipHeight() > screenHeight)
+                character.y = screenHeight - character.getShipHeight();
+            character.charFrame++;
+            if (character.charFrame > 7) character.charFrame = 0;
+            canvas.drawBitmap(character.getShip(character.charFrame), character.x, character.y, null);
+        }
+        else if(character.charFrame < 25){
+            character.charFrame++;
+            canvas.drawBitmap(character.getShip(character.charFrame), character.x - 120, character.y -30, null);
+        }
 
         //enemy
         canvas.drawBitmap(enemy.getEnemyShip(), enemy.x, enemy.y, null);
@@ -131,17 +160,19 @@ public class MainGame extends View {
         }
 
         //own_bullets
-        for(int i=0; i < bullets.size();i++) {
-            bullets.get(i).y -=30;
-            canvas.drawBitmap(bullets.get(i).getBullet(), bullets.get(i).x, bullets.get(i).y, null);
-            if(bullets.get(i).y <= 0) bullets.remove(i);
-            else if(bullets.get(i).x >= enemy.x
-                    && bullets.get(i).x + bullets.get(i).getBulletWidth() <= enemy.x + enemy.getEnemyShipWidth()
-                    && bullets.get(i).y >= enemy.y
-                    && bullets.get(i).y + bullets.get(i).getBulletHeight() <= enemy.y +enemy.getEnemyShipHeight() ) {
-                explosions.add(new Explosion(context, enemy.x + 30, enemy.y + 100));
-                bullets.remove(i);
-                score += 10;
+        if(!dead) {
+            for (int i = 0; i < bullets.size(); i++) {
+                bullets.get(i).y -= 30;
+                canvas.drawBitmap(bullets.get(i).getBullet(), bullets.get(i).x, bullets.get(i).y, null);
+                if (bullets.get(i).y <= 0) bullets.remove(i);
+                else if (bullets.get(i).x >= enemy.x
+                        && bullets.get(i).x + bullets.get(i).getBulletWidth() <= enemy.x + enemy.getEnemyShipWidth()
+                        && bullets.get(i).y >= enemy.y
+                        && bullets.get(i).y + bullets.get(i).getBulletHeight() <= enemy.y + enemy.getEnemyShipHeight()) {
+                    explosions.add(new Explosion(context, enemy.x + 30, enemy.y + 100));
+                    bullets.remove(i);
+                    score += 10;
+                }
             }
         }
 
@@ -150,17 +181,18 @@ public class MainGame extends View {
             e_bullets.get(i).y +=15;
             canvas.drawBitmap(e_bullets.get(i).getBullet(), e_bullets.get(i).x, e_bullets.get(i).y, null);
             if(e_bullets.get(i).y > screenHeight) e_bullets.remove(i);
-            else if(e_bullets.get(i).x >= character.x
+            else if(!dead && e_bullets.get(i).x >= character.x
                     && e_bullets.get(i).x + e_bullets.get(i).getBulletWidth() <= character.x + character.getShipWidth()
                     && e_bullets.get(i).y >= character.y
                     && e_bullets.get(i).y + e_bullets.get(i).getBulletHeight() <= character.y +character.getShipHeight() ) {
                 explosions.add(new Explosion(context, character.x + 30, character.y + 20));
                 e_bullets.remove(i);
+                lifes--;
             }
         }
 
         //reset drawing
-        handler.postDelayed(runnable, 10);
+        if(!paused) handler.postDelayed(runnable, 10);
     }
 
     private void ShootBullet() {
@@ -175,6 +207,7 @@ public class MainGame extends View {
     int yDown = 0;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(dead) return false;
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
             xDown = character.x - (int) event.getX();
             yDown = character.y - (int) event.getY();

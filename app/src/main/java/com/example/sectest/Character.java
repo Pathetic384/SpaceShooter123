@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 
 public class Character {
     Context context;
-    Bitmap ship[] = new Bitmap[8];
+    Bitmap ship[] = new Bitmap[26];
     int x,y;
     int charFrame;
 
@@ -20,6 +20,24 @@ public class Character {
         ship[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char16);
         ship[6] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char17);
         ship[7] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char18);
+        ship[8] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e11);
+        ship[9] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e11);
+        ship[10] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e12);
+        ship[11] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e12);
+        ship[12] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e13);
+        ship[13] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e13);
+        ship[14] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e14);
+        ship[15] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e14);
+        ship[16] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e15);
+        ship[17] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e15);
+        ship[18] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e16);
+        ship[19] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e16);
+        ship[20] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e17);
+        ship[21] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e17);
+        ship[22] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e18);
+        ship[23] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e18);
+        ship[24] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e19);
+        ship[25] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char_e19);
         charFrame = 0;
         resetShip();
     }
