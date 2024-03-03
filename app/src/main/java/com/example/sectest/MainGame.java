@@ -21,10 +21,11 @@ import java.util.ArrayList;
 
 public class MainGame extends View {
     Context context;
-    Bitmap background, scoreImg;
+    Bitmap scoreImg, hp;
     Bitmap layer1, layer2, layer3, layer4;
     int y2 = 0, y3 = 0, y4 = 0;
     int score;
+    int lifes;
     Paint scorePaint;
     Handler handler;
     static int screenWidth, screenHeight;
@@ -53,8 +54,8 @@ public class MainGame extends View {
 
         character = new Character(context);
         enemy = new Enemy(context);
-        background = BitmapFactory.decodeResource(context.getResources(), R.drawable.bg1);
         scoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.score);
+        hp = BitmapFactory.decodeResource(context.getResources(), R.drawable.hp);
         //layers
         layer1 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
         layer2 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
@@ -63,6 +64,7 @@ public class MainGame extends View {
 
         handler = new Handler();
 
+        lifes = 3;
         score = 0;
         scorePaint = new Paint();
         scorePaint.setColor(Color.YELLOW);
@@ -102,6 +104,9 @@ public class MainGame extends View {
         canvas.drawBitmap(layer4, 0, y4 - screenHeight, null);
         if(y4 ==  screenHeight) y4 = 0;
 
+        for(int i = 1; i<= lifes; i++) {
+            canvas.drawBitmap(hp, 15, screenHeight - 70 - (hp.getHeight() + 10)*i, null);
+        }
         canvas.drawBitmap(scoreImg, 15,15 ,null);
         canvas.drawText(String.valueOf(score), scoreImg.getWidth() + 40, 70, scorePaint);
 
@@ -118,7 +123,7 @@ public class MainGame extends View {
         //enemy
         canvas.drawBitmap(enemy.getEnemyShip(), enemy.x, enemy.y, null);
 
-   /*     //explosion
+        //explosion
         for(int i=0; i<explosions.size();i++) {
             canvas.drawBitmap(explosions.get(i).getExplosion(), explosions.get(i).x, explosions.get(i).y, null);
             explosions.get(i).frame++;
@@ -152,7 +157,7 @@ public class MainGame extends View {
                 explosions.add(new Explosion(context, character.x + 30, character.y + 20));
                 e_bullets.remove(i);
             }
-        } */
+        }
 
         //reset drawing
         handler.postDelayed(runnable, 10);
