@@ -3,12 +3,15 @@ package com.example.sectest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.CountDownTimer;
+import android.util.Log;
 
 public class Character {
     Context context;
-    Bitmap ship[] = new Bitmap[26];
-    int x,y;
+    static Bitmap ship[] = new Bitmap[26];
+    static int x,y;
     int charFrame;
+    static CountDownTimer timer;
 
     public Character(Context context) {
         this.context = context;
@@ -45,14 +48,36 @@ public class Character {
     public Bitmap getShip(int charFrame) {
         return ship[charFrame];
     }
-    public int getShipHeight() {
+    public static int getShipHeight() {
         return ship[0].getHeight();
     }
-    public int getShipWidth() {
+    public static int getShipWidth() {
         return ship[0].getWidth();
     }
     public void resetShip() {
         x = 200;
         y = 800;
+    }
+
+    public static void SpawnBullet(int loop, Context context) {
+        timer = new CountDownTimer(loop, 20) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+            @Override
+            public void onFinish() {
+
+                try{
+                    Spawning(context);
+                }catch(Exception e){
+                    Log.e("Error", "Error: " + e.toString());
+                }
+            }
+        }.start();
+    }
+    static void Spawning(Context context) {
+        Bullet bullet = new Bullet(context, x + getShipWidth()/2 - 20, y);
+        MainGame.bullets.add(bullet);
+        timer.start();
     }
 }

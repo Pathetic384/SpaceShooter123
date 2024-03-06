@@ -35,9 +35,9 @@ public class MainGame extends View {
     Handler handler;
     static int screenWidth, screenHeight;
     Character character;
-    Enemy enemy;
-    ArrayList<Bullet> bullets = new ArrayList<>();
-    ArrayList<EnemyBullet> e_bullets = new ArrayList<>();
+    public static ArrayList<Enemy> enemies = new ArrayList<>();
+    public static ArrayList<Bullet> bullets = new ArrayList<>();
+    public static ArrayList<EnemyBullet> e_bullets = new ArrayList<>();
     ArrayList<Explosion> explosions = new ArrayList<>();
     final Runnable runnable = new Runnable() {
         @Override
@@ -58,7 +58,6 @@ public class MainGame extends View {
         screenWidth = point.x;
 
         character = new Character(context);
-        enemy = new Enemy(context);
         scoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.score);
         hp = BitmapFactory.decodeResource(context.getResources(), R.drawable.hp);
         //layers
@@ -76,20 +75,8 @@ public class MainGame extends View {
         scorePaint.setTextSize(80);
         scorePaint.setTextAlign(Paint.Align.LEFT);
 
-        timer = new CountDownTimer(500, 20) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-            }
-            @Override
-            public void onFinish() {
-
-                try{
-                    ShootBullet();
-                }catch(Exception e){
-                    Log.e("Error", "Error: " + e.toString());
-                }
-            }
-        }.start();
+        Enemy.SpawnEnemy(3000, context);
+        Character.SpawnBullet(500, context);
 
         handler = new Handler();
     }
@@ -134,23 +121,27 @@ public class MainGame extends View {
 
         //character
         if(!dead) {
-            if (character.x > screenWidth - character.getShipWidth())
-                character.x = screenWidth - character.getShipWidth();
-            else if (character.x < 0) character.x = 0;
-            if (character.y <= 0) character.y = 0;
-            else if (character.y + character.getShipHeight() > screenHeight)
-                character.y = screenHeight - character.getShipHeight();
+            if (Character.x > screenWidth - Character.getShipWidth())
+                Character.x = screenWidth - Character.getShipWidth();
+            else if (Character.x < 0) Character.x = 0;
+            if (Character.y <= 0) Character.y = 0;
+            else if (Character.y + Character.getShipHeight() > screenHeight)
+                Character.y = screenHeight - Character.getShipHeight();
             character.charFrame++;
             if (character.charFrame > 7) character.charFrame = 0;
-            canvas.drawBitmap(character.getShip(character.charFrame), character.x, character.y, null);
+            canvas.drawBitmap(character.getShip(character.charFrame), Character.x, Character.y, null);
         }
         else if(character.charFrame < 25){
             character.charFrame++;
-            canvas.drawBitmap(character.getShip(character.charFrame), character.x - 120, character.y -30, null);
+            canvas.drawBitmap(character.getShip(character.charFrame), Character.x - 120, Character.y -30, null);
         }
 
         //enemy
-        canvas.drawBitmap(enemy.getEnemyShip(), enemy.x, enemy.y, null);
+        for(int i =0;i<enemies.size();i++) {
+            enemies.get(i).y += 5;
+            canvas.drawBitmap(enemies.get(i).getEnemyShip(), enemies.get(i).x, enemies.get(i).y, null);
+            if (enemies.get(i).y > screenHeight) enemies.remove(i);
+        }
 
         //explosion
         for(int i=0; i<explosions.size();i++) {
@@ -164,28 +155,33 @@ public class MainGame extends View {
             for (int i = 0; i < bullets.size(); i++) {
                 bullets.get(i).y -= 30;
                 canvas.drawBitmap(bullets.get(i).getBullet(), bullets.get(i).x, bullets.get(i).y, null);
-                if (bullets.get(i).y <= 0) bullets.remove(i);
-                else if (bullets.get(i).x >= enemy.x
-                        && bullets.get(i).x + bullets.get(i).getBulletWidth() <= enemy.x + enemy.getEnemyShipWidth()
-                        && bullets.get(i).y >= enemy.y
-                        && bullets.get(i).y + bullets.get(i).getBulletHeight() <= enemy.y + enemy.getEnemyShipHeight()) {
-                    explosions.add(new Explosion(context, enemy.x + 30, enemy.y + 100));
-                    bullets.remove(i);
-                    score += 10;
+                for(int j=0;j<enemies.size();j++) {
+                    if (bullets.get(i).x >= enemies.get(j).x
+                            && bullets.get(i).x + bullets.get(i).getBulletWidth() <= enemies.get(j).x + enemies.get(j).getEnemyShipWidth()
+                            && bullets.get(i).y >= enemies.get(j).y
+                            && bullets.get(i).y + bullets.get(i).getBulletHeight() <= enemies.get(j).y + enemies.get(j).getEnemyShipHeight()) {
+                        explosions.add(new Explosion(context, enemies.get(j).x + 30, enemies.get(j).y + 100));
+                        enemies.get(j).StopShooting();
+                        enemies.remove(j);
+                        bullets.remove(i);
+                        score += 10;
+                        break;
+                    }
                 }
+                if (bullets.get(i).y <= 0) bullets.remove(i);
             }
         }
 
         //enemy_bullet
         for(int i=0; i < e_bullets.size();i++) {
-            e_bullets.get(i).y +=15;
+            e_bullets.get(i).MovePattern();
             canvas.drawBitmap(e_bullets.get(i).getBullet(), e_bullets.get(i).x, e_bullets.get(i).y, null);
             if(e_bullets.get(i).y > screenHeight) e_bullets.remove(i);
-            else if(!dead && e_bullets.get(i).x >= character.x
-                    && e_bullets.get(i).x + e_bullets.get(i).getBulletWidth() <= character.x + character.getShipWidth()
-                    && e_bullets.get(i).y >= character.y
-                    && e_bullets.get(i).y + e_bullets.get(i).getBulletHeight() <= character.y +character.getShipHeight() ) {
-                explosions.add(new Explosion(context, character.x + 30, character.y + 20));
+            else if(!dead && e_bullets.get(i).x >= Character.x
+                    && e_bullets.get(i).x + e_bullets.get(i).getBulletWidth() <= Character.x + Character.getShipWidth()
+                    && e_bullets.get(i).y >= Character.y
+                    && e_bullets.get(i).y + e_bullets.get(i).getBulletHeight() <= Character.y + Character.getShipHeight() ) {
+                explosions.add(new Explosion(context, Character.x + 30, Character.y + 20));
                 e_bullets.remove(i);
                 lifes--;
             }
@@ -195,13 +191,6 @@ public class MainGame extends View {
         if(!paused) handler.postDelayed(runnable, 10);
     }
 
-    private void ShootBullet() {
-        Bullet newBullet = new Bullet(context, character.x + character.getShipWidth()/2 - 20, character.y);
-        EnemyBullet newEBullet = new EnemyBullet(context, enemy.x + enemy.getEnemyShipWidth()/2 - 20, enemy.y + enemy.getEnemyShipHeight());
-        e_bullets.add(newEBullet);
-        bullets.add(newBullet);
-        timer.start();
-    }
 
     int xDown = 0;
     int yDown = 0;
@@ -209,12 +198,12 @@ public class MainGame extends View {
     public boolean onTouchEvent(MotionEvent event) {
         if(dead) return false;
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
-            xDown = character.x - (int) event.getX();
-            yDown = character.y - (int) event.getY();
+            xDown = Character.x - (int) event.getX();
+            yDown = Character.y - (int) event.getY();
         }
         if(event.getAction() == MotionEvent.ACTION_MOVE) {
-            character.x = (int) event.getX() + xDown;
-            character.y = (int) event.getY() + yDown;
+            Character.x = (int) event.getX() + xDown;
+            Character.y = (int) event.getY() + yDown;
         }
         if(event.getAction() == MotionEvent.ACTION_UP) {
             xDown = 0;
