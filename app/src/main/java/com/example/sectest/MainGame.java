@@ -155,6 +155,10 @@ public class MainGame extends View {
             for (int i = 0; i < bullets.size(); i++) {
                 bullets.get(i).y -= 30;
                 canvas.drawBitmap(bullets.get(i).getBullet(), bullets.get(i).x, bullets.get(i).y, null);
+                if (bullets.get(i).y <= 0) {
+                    bullets.remove(i);
+                    break;
+                }
                 for(int j=0;j<enemies.size();j++) {
                     if (bullets.get(i).x >= enemies.get(j).x
                             && bullets.get(i).x + bullets.get(i).getBulletWidth() <= enemies.get(j).x + enemies.get(j).getEnemyShipWidth()
@@ -168,7 +172,6 @@ public class MainGame extends View {
                         break;
                     }
                 }
-                if (bullets.get(i).y <= 0) bullets.remove(i);
             }
         }
 
