@@ -27,7 +27,10 @@ public class MainGame extends View {
     boolean dead = false;
     Context context;
     Bitmap scoreImg, hp;
-    Bitmap layer1, layer2, layer3, layer4;
+    static Bitmap layer1, layer2, layer3, layer4;
+    static Bitmap layer11, layer21, layer31, layer41;
+    static Bitmap layer12, layer22, layer32, layer42;
+    static Bitmap layer13, layer23, layer33, layer43;
     int y2 = 0, y3 = 0, y4 = 0;
     public static int score;
     int lifes;
@@ -60,11 +63,22 @@ public class MainGame extends View {
         character = new Character(context);
         scoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.score);
         hp = BitmapFactory.decodeResource(context.getResources(), R.drawable.hp);
-        //layers
-        layer1 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
-        layer2 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
-        layer3 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
-        layer4 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
+        //layers ez
+        layer11 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
+        layer21 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
+        layer31 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
+        layer41 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
+        //layer mid
+        layer12 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
+        layer22 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
+        layer32 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
+        layer42 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
+        //layer herd
+        layer13 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
+        layer23 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
+        layer33 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
+        layer43 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
+        ChangeBackground(1);
 
         handler = new Handler();
 
@@ -75,10 +89,16 @@ public class MainGame extends View {
         scorePaint.setTextSize(80);
         scorePaint.setTextAlign(Paint.Align.LEFT);
 
-        Enemy.SpawnEnemy(3000, context);
+        Enemy.SpawnEnemy( context);
         Character.SpawnBullet(500, context);
 
         handler = new Handler();
+    }
+
+    public static void ChangeBackground(int i) {
+        if(i==1) {layer1 = layer11; layer2 = layer21; layer3 = layer31; layer4 = layer41;}
+        if(i==2) {layer1 = layer12; layer2 = layer22; layer3 = layer32; layer4 = layer42;}
+        if(i==3) {layer1 = layer13; layer2 = layer23; layer3 = layer33; layer4 = layer43;}
     }
 
     @Override
@@ -104,10 +124,20 @@ public class MainGame extends View {
         }
         if(lifes == 0 && !dead) {
             dead = true;
-            character.charFrame = 8;
+            Character.charFrame = 8;
+            Enemy.StopSpawning();
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    Character.resetShip();
+                    for(int i = 0;i<enemies.size();i++) {
+                        enemies.get(i).StopShooting();
+                    }
+                    enemies.clear();
+                    bullets.clear();
+                    Character.StopSpawning();
+                    e_bullets.clear();
+                    explosions.clear();
                     handler = null;
                     paused = true;
                     Intent intent = new Intent(context, LoseScreen.class);
@@ -127,20 +157,23 @@ public class MainGame extends View {
             if (Character.y <= 0) Character.y = 0;
             else if (Character.y + Character.getShipHeight() > screenHeight)
                 Character.y = screenHeight - Character.getShipHeight();
-            character.charFrame++;
-            if (character.charFrame > 7) character.charFrame = 0;
-            canvas.drawBitmap(character.getShip(character.charFrame), Character.x, Character.y, null);
+            Character.charFrame++;
+            if (Character.charFrame > 7) Character.charFrame = 0;
+            canvas.drawBitmap(character.getShip(Character.charFrame), Character.x, Character.y, null);
         }
-        else if(character.charFrame < 25){
-            character.charFrame++;
-            canvas.drawBitmap(character.getShip(character.charFrame), Character.x - 120, Character.y -30, null);
+        else if(Character.charFrame < 25){
+            Character.charFrame++;
+            canvas.drawBitmap(character.getShip(Character.charFrame), Character.x - 120, Character.y -30, null);
         }
 
         //enemy
         for(int i =0;i<enemies.size();i++) {
-            enemies.get(i).y += 5;
+            enemies.get(i).y += Enemy.enemyVelocity;
             canvas.drawBitmap(enemies.get(i).getEnemyShip(), enemies.get(i).x, enemies.get(i).y, null);
-            if (enemies.get(i).y > screenHeight) enemies.remove(i);
+            if (enemies.get(i).y > screenHeight) {
+                lifes--;
+                enemies.remove(i);
+            }
         }
 
         //explosion

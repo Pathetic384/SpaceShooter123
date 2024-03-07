@@ -10,17 +10,47 @@ import java.util.Random;
 
 public class Enemy {
     Context context;
-    Bitmap enemyShip;
+    static Bitmap enemyShip;
+    static Bitmap enemyShip1;
+    static Bitmap enemyShip2;
+    static Bitmap enemyShip3;
     int x,y;
     static CountDownTimer timer;
     CountDownTimer bullet_timer;
+    static int enemyLoop = 3000;
+    static int bulletLoop = 1000;
+    static int enemyVelocity = 5;
 
     public Enemy(Context context) {
         this.context = context;
-        enemyShip = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem1);
+        enemyShip1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem1);
+        enemyShip2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem1);
+        enemyShip3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem1);
+        enemyShip = enemyShip1;
 
         resetEnemyShip();
-        SpawnBullets(1000);
+        SpawnBullets();
+    }
+
+    public static void ChangeShip(int i) {
+        if(i==1) {
+            enemyShip = enemyShip1;
+            bulletLoop = 1000;
+            enemyLoop = 3000;
+            enemyVelocity = 5;
+        }
+        if(i==2) {
+            enemyShip = enemyShip2;
+            bulletLoop = 750;
+            enemyLoop = 2500;
+            enemyVelocity = 8;
+        }
+        if(i==3) {
+            enemyShip = enemyShip3;
+            bulletLoop = 500;
+            enemyLoop = 2000;
+            enemyVelocity = 10;
+        }
     }
 
     public Bitmap getEnemyShip() {
@@ -37,8 +67,8 @@ public class Enemy {
         y = 0;
     }
 
-    public static void SpawnEnemy(int loop, Context context) {
-        timer = new CountDownTimer(loop, 20) {
+    public static void SpawnEnemy(Context context) {
+        timer = new CountDownTimer(enemyLoop, 20) {
             @Override
             public void onTick(long millisUntilFinished) {
             }
@@ -59,8 +89,8 @@ public class Enemy {
         timer.start();
     }
 
-    void SpawnBullets(int loop){
-        bullet_timer = new CountDownTimer(loop, 20) {
+    void SpawnBullets(){
+        bullet_timer = new CountDownTimer(bulletLoop, 20) {
             @Override
             public void onTick(long millisUntilFinished) {
             }
@@ -82,5 +112,8 @@ public class Enemy {
     }
     void StopShooting() {
         bullet_timer.cancel();
+    }
+    static void StopSpawning() {
+        timer.cancel();
     }
 }
