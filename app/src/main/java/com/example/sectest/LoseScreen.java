@@ -22,7 +22,8 @@ public class LoseScreen extends AppCompatActivity {
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoseScreen.this, MainActivity.class));
+                Intent intent = new Intent(LoseScreen.this, MainActivity.class);
+                startActivity(intent);
             }
         });
     }

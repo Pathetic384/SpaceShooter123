@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.CountDownTimer;
@@ -38,6 +39,7 @@ public class MainGame extends View {
     Handler handler;
     static int screenWidth, screenHeight;
     Character character;
+    ExitPoint exitPoint;
     public static ArrayList<Enemy> enemies = new ArrayList<>();
     public static ArrayList<Bullet> bullets = new ArrayList<>();
     public static ArrayList<EnemyBullet> e_bullets = new ArrayList<>();
@@ -48,7 +50,7 @@ public class MainGame extends View {
             invalidate();
         }
     };
-    private CountDownTimer timer;
+
 
     public MainGame(Context context) {
         super(context);
@@ -60,6 +62,7 @@ public class MainGame extends View {
         screenHeight = point.y;
         screenWidth = point.x;
 
+        exitPoint = new ExitPoint(context);
         character = new Character(context);
         scoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.score);
         hp = BitmapFactory.decodeResource(context.getResources(), R.drawable.hp);
@@ -79,7 +82,10 @@ public class MainGame extends View {
         layer33 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
         layer43 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
         ChangeBackground(1);
+        //exit point
 
+
+        //handler
         handler = new Handler();
 
         lifes = 3;
@@ -122,7 +128,8 @@ public class MainGame extends View {
         for(int i = 1; i<= lifes; i++) {
             canvas.drawBitmap(hp, 15, screenHeight - 70 - (hp.getHeight() + 10)*i, null);
         }
-        if(lifes == 0 && !dead) {
+        if((lifes == 0 && !dead)) {//(Character.x + Character.getShipWidth() > screenWidth - ExitPoint.exitWidth + 50 && Character.y < ExitPoint.exitHeight - 50)) {
+            lifes = 0;
             dead = true;
             Character.charFrame = 8;
             Enemy.StopSpawning();
@@ -148,6 +155,11 @@ public class MainGame extends View {
         }
         canvas.drawBitmap(scoreImg, 15,15 ,null);
         canvas.drawText(String.valueOf(score), scoreImg.getWidth() + 40, 70, scorePaint);
+
+        //exit area
+        exitPoint.frame++;
+        if(exitPoint.frame>29) exitPoint.frame=0;
+        canvas.drawBitmap(exitPoint.getExit(), screenWidth - ExitPoint.exitWidth, 0, null);
 
         //character
         if(!dead) {
@@ -223,6 +235,8 @@ public class MainGame extends View {
             }
         }
 
+        if(Character.x + Character.getShipWidth() > screenWidth - ExitPoint.exitWidth + 30 && Character.y  < ExitPoint.exitHeight - 30) lifes = 0;
+
         //reset drawing
         if(!paused) handler.postDelayed(runnable, 10);
     }
@@ -247,4 +261,5 @@ public class MainGame extends View {
         }
         return true;
     }
+
 }
