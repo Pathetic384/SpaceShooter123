@@ -29,9 +29,9 @@ public class MainGame extends View {
     Context context;
     Bitmap scoreImg, hp;
     static Bitmap layer1, layer2, layer3, layer4;
-    static Bitmap layer11, layer21, layer31, layer41;
-    static Bitmap layer12, layer22, layer32, layer42;
-    static Bitmap layer13, layer23, layer33, layer43;
+    static Bitmap layer11, layer12, layer13, layer14;
+    static Bitmap layer21, layer22, layer23, layer24;
+    static Bitmap layer31, layer32, layer33, layer34;
     int y2 = 0, y3 = 0, y4 = 0;
     public static int score;
     int lifes;
@@ -62,26 +62,27 @@ public class MainGame extends View {
         screenHeight = point.y;
         screenWidth = point.x;
 
+
         exitPoint = new ExitPoint(context);
         character = new Character(context);
         scoreImg = BitmapFactory.decodeResource(context.getResources(), R.drawable.score);
         hp = BitmapFactory.decodeResource(context.getResources(), R.drawable.hp);
         //layers ez
         layer11 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
-        layer21 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
-        layer31 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
-        layer41 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
+        layer12 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
+        layer13 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
+        layer14 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
         //layer mid
-        layer12 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
-        layer22 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
-        layer32 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
-        layer42 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
+        layer21 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer11), screenWidth, screenHeight, false );
+        layer22 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer12), screenWidth, screenHeight, false );
+        layer23 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer13), screenWidth, screenHeight, false );
+        layer24 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer14), screenWidth, screenHeight, false );
         //layer herd
-        layer13 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer1), screenWidth, screenHeight, false );
-        layer23 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer2), screenWidth, screenHeight, false );
-        layer33 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer3), screenWidth, screenHeight, false );
-        layer43 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer4), screenWidth, screenHeight, false );
-        ChangeBackground(1);
+        layer31 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer21), screenWidth, screenHeight, false );
+        layer32 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer22), screenWidth, screenHeight, false );
+        layer33 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer23), screenWidth, screenHeight, false );
+        layer34 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.layer24), screenWidth, screenHeight, false );
+        ChangeBackground(MainActivity.currentLvl);
         //exit point
 
 
@@ -95,6 +96,17 @@ public class MainGame extends View {
         scorePaint.setTextSize(80);
         scorePaint.setTextAlign(Paint.Align.LEFT);
 
+
+        Character.resetShip();
+        for(int i = 0;i<enemies.size();i++) {
+            enemies.get(i).StopShooting();
+        }
+        enemies.clear();
+        bullets.clear();
+        e_bullets.clear();
+        explosions.clear();
+
+
         Enemy.SpawnEnemy( context);
         Character.SpawnBullet(500, context);
 
@@ -102,9 +114,9 @@ public class MainGame extends View {
     }
 
     public static void ChangeBackground(int i) {
-        if(i==1) {layer1 = layer11; layer2 = layer21; layer3 = layer31; layer4 = layer41;}
-        if(i==2) {layer1 = layer12; layer2 = layer22; layer3 = layer32; layer4 = layer42;}
-        if(i==3) {layer1 = layer13; layer2 = layer23; layer3 = layer33; layer4 = layer43;}
+        if(i==1) {layer1 = layer11; layer2 = layer12; layer3 = layer13; layer4 = layer14;}
+        if(i==2) {layer1 = layer21; layer2 = layer22; layer3 = layer23; layer4 = layer24;}
+        if(i==3) {layer1 = layer31; layer2 = layer32; layer3 = layer33; layer4 = layer34;}
     }
 
     @Override
@@ -163,6 +175,12 @@ public class MainGame extends View {
 
         //character
         if(!dead) {
+            if(MainActivity.gameMode == 2) {
+                if(MainActivity.xTilt<0) Character.x+=6;
+                else if(MainActivity.xTilt>0)Character.x-=6;
+                if(MainActivity.yTilt<0) Character.y-=6;
+                else if(MainActivity.yTilt>0)Character.y+=6;
+            }
             if (Character.x > screenWidth - Character.getShipWidth())
                 Character.x = screenWidth - Character.getShipWidth();
             else if (Character.x < 0) Character.x = 0;
@@ -247,6 +265,7 @@ public class MainGame extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if(dead) return false;
+        if(MainActivity.gameMode == 2) return false;
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
             xDown = Character.x - (int) event.getX();
             yDown = Character.y - (int) event.getY();
@@ -261,5 +280,6 @@ public class MainGame extends View {
         }
         return true;
     }
+
 
 }

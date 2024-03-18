@@ -15,9 +15,9 @@ public class Bullet {
     public Bullet(Context context, int x, int y) {
         this.context = context;
         bullet1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet1);
-        bullet2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet1);
-        bullet3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet1);
-        bullet = bullet1;
+        bullet2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet2);
+        bullet3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet3);
+        ChangeBullet(MainActivity.shipState);
         this.x = x;
         this.y = y;
     }

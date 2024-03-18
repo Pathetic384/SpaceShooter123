@@ -9,8 +9,8 @@
 
     <TextView
         android:id="@+id/scoreText"
-        android:layout_width="149dp"
-        android:layout_height="64dp"
+        android:layout_width="142dp"
+        android:layout_height="266dp"
         android:text="TextView"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -24,9 +24,9 @@ public class Enemy {
     public Enemy(Context context) {
         this.context = context;
         enemyShip1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem1);
-        enemyShip2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem1);
-        enemyShip3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem1);
-        enemyShip = enemyShip1;
+        enemyShip2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem2);
+        enemyShip3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.enem3);
+        ChangeShip(MainActivity.currentLvl);
 
         resetEnemyShip();
         SpawnBullets();
@@ -113,7 +113,11 @@ public class Enemy {
     void StopShooting() {
         bullet_timer.cancel();
     }
+    void ContinueShooting() {bullet_timer.start();}
     static void StopSpawning() {
         timer.cancel();
+    }
+    static void ContinueSpawning() {
+        timer.start();
     }
 }

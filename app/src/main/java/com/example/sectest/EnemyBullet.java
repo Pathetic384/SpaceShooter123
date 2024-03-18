@@ -18,9 +18,9 @@ public class EnemyBullet {
     public EnemyBullet(Context context, int x, int y) {
         this.context = context;
         bullet1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.ebullet1);
-        bullet2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.ebullet1);
-        bullet3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.ebullet1);
-        bullet = bullet1;
+        bullet2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.ebullet2);
+        bullet3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.ebullet3);
+        ChangeBullet(MainActivity.currentLvl);
         this.x = x;
         this.y = y;
 
