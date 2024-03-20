@@ -27,6 +27,7 @@ public class LoseScreen extends AppCompatActivity {
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Character.bulletSound.stop();
                 Intent intent = new Intent(LoseScreen.this, MainActivity.class);
                 startActivity(intent);
             }

@@ -3,6 +3,7 @@ package com.example.sectest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.util.Log;
 
@@ -15,9 +16,11 @@ public class Character {
     static int x,y;
     static int charFrame;
     static CountDownTimer timer;
+    public static MediaPlayer bulletSound;
 
     public Character(Context context) {
         this.context = context;
+        bulletSound = MediaPlayer.create(context, R.raw.bullet_sound);
         //loading ship1
         ship1[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char11);
         ship1[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.char12);
@@ -141,6 +144,7 @@ public class Character {
         }.start();
     }
     static void Spawning(Context context) {
+        bulletSound.start();
         Bullet bullet = new Bullet(context, x + getShipWidth()/2 - 20, y);
         MainGame.bullets.add(bullet);
         timer.start();

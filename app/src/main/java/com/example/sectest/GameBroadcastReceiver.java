@@ -11,6 +11,7 @@ public class GameBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if(!MainActivity.ini) return;
         if(MainActivity.paused) {
             Character.StopSpawning();
             Enemy.StopSpawning();

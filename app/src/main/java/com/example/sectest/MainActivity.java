@@ -10,11 +10,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -22,20 +25,56 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private SensorManager sensorManager;
     private Sensor sensor;
+    public static AudioManager audioManager;
     public static boolean paused = false;
     public static int currentLvl = 1;
     public static int shipState = 1;
     public static float xTilt, yTilt;
     public static int gameMode = 1;
+    public static boolean ini = false;
+    MediaPlayer gyu;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+        gyu = MediaPlayer.create(MainActivity.this, R.raw.gyu);
+
+        SeekBar seekBar = (SeekBar)findViewById(R.id.volume);
+       // if(seekBar != null) {
+            seekBar.setMax(maxVolume);
+            seekBar.setProgress(currentVolume);
+
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+       // }
+        gyu.start();
+
         //sprites
         Button ship1 = (Button) findViewById(R.id.ship1);
         ship1.setOnClickListener(new View.OnClickListener() {
@@ -103,11 +142,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void StartGame(View view) {
+        ini = true;
+        gyu.stop();
         MainGame mg = new MainGame(this);
         setContentView(mg);
     }
 
     protected void onPause() {
+        gyu.pause();
+        if(ini) Character.bulletSound.stop();
         sensorManager.unregisterListener(this);
         Intent bIntent = new Intent(MainActivity.this, GameBroadcastReceiver.class);
         bIntent.setAction("gameCast");
@@ -120,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     protected void onResume() {
+        gyu.start();
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         if(paused) {
             paused = false;

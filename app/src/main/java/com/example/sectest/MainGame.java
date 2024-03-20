@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
@@ -51,6 +52,7 @@ public class MainGame extends View {
         }
     };
 
+    MediaPlayer ex_sound;
 
     public MainGame(Context context) {
         super(context);
@@ -62,6 +64,7 @@ public class MainGame extends View {
         screenHeight = point.y;
         screenWidth = point.x;
 
+        ex_sound = MediaPlayer.create(context, R.raw.ex_sound);
 
         exitPoint = new ExitPoint(context);
         character = new Character(context);
@@ -144,6 +147,8 @@ public class MainGame extends View {
             lifes = 0;
             dead = true;
             Character.charFrame = 8;
+            Character.bulletSound.stop();
+            Character.StopSpawning();
             Enemy.StopSpawning();
             postDelayed(new Runnable() {
                 @Override
@@ -154,7 +159,6 @@ public class MainGame extends View {
                     }
                     enemies.clear();
                     bullets.clear();
-                    Character.StopSpawning();
                     e_bullets.clear();
                     explosions.clear();
                     handler = null;
@@ -208,6 +212,7 @@ public class MainGame extends View {
 
         //explosion
         for(int i=0; i<explosions.size();i++) {
+            ex_sound.start();
             canvas.drawBitmap(explosions.get(i).getExplosion(), explosions.get(i).x, explosions.get(i).y, null);
             explosions.get(i).frame++;
             if(explosions.get(i).frame > 7) explosions.remove(i);
@@ -253,7 +258,10 @@ public class MainGame extends View {
             }
         }
 
-        if(Character.x + Character.getShipWidth() > screenWidth - ExitPoint.exitWidth + 30 && Character.y  < ExitPoint.exitHeight - 30) lifes = 0;
+        if(Character.x + Character.getShipWidth() > screenWidth - ExitPoint.exitWidth + 30 && Character.y  < ExitPoint.exitHeight - 30 && lifes!=0) {
+            ex_sound.start();
+            lifes = 0;
+        }
 
         //reset drawing
         if(!paused) handler.postDelayed(runnable, 10);
