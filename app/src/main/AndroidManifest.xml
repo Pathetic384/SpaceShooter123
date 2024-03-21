@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SecTest"
         tools:targetApi="31">
+        <service
+            android:name=".GameService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <receiver
             android:name=".GameBroadcastReceiver"
             android:enabled="true"
@@ -27,12 +32,11 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
         </activity>
     </application>

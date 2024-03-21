@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-
+    private Intent serviceIntent;
     private SensorManager sensorManager;
     private Sensor sensor;
     public static AudioManager audioManager;
@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
+
+        serviceIntent = new Intent(this, GameService.class);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -146,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyu.stop();
         MainGame mg = new MainGame(this);
         setContentView(mg);
+        startService(serviceIntent);
     }
 
     protected void onPause() {
@@ -173,6 +176,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             sendBroadcast(bIntent);
         }
         super.onResume();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Stop the service when MainActivity is destroyed
+        stopService(serviceIntent);
     }
 
     @Override
