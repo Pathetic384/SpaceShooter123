@@ -4,8 +4,10 @@ import static androidx.core.content.ContextCompat.getSystemService;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,6 +15,7 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -33,8 +36,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static int gameMode = 1;
     public static boolean ini = false;
     MediaPlayer gyu;
-
-
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyu = MediaPlayer.create(MainActivity.this, R.raw.gyu);
 
         SeekBar seekBar = (SeekBar)findViewById(R.id.volume);
-       // if(seekBar != null) {
             seekBar.setMax(maxVolume);
             seekBar.setProgress(currentVolume);
 
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 }
             });
-       // }
         gyu.start();
 
         //sprites
