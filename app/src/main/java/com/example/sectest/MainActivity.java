@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static int gameMode = 1;
     public static boolean ini = false;
     MediaPlayer gyu;
-    
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

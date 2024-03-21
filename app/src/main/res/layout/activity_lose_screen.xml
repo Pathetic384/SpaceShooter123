@@ -9,14 +9,16 @@
 
     <TextView
         android:id="@+id/scoreText"
-        android:layout_width="142dp"
-        android:layout_height="266dp"
+        android:layout_width="314dp"
+        android:layout_height="366dp"
         android:text="TextView"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.649"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.665" />
 
     <Button
         android:id="@+id/menuButton"

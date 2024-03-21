@@ -36,7 +36,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public Cursor getScores() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectAll = "SELECT * FROM " + Util.TABLE_NAME + " ORDER BY " + Util.KEY_SCORE + " DESC";
+        String selectAll = "SELECT * FROM " + Util.TABLE_NAME + " ORDER BY " + Util.KEY_SCORE + " DESC LIMIT 3";
         Cursor cursor = db.rawQuery(selectAll, null);
         return cursor;
 

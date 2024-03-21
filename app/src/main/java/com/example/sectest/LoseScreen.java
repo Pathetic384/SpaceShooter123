@@ -6,10 +6,16 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class LoseScreen extends AppCompatActivity {
 
@@ -17,6 +23,7 @@ public class LoseScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lose_screen);
+        Random generatePlayers = new Random();
         TextView tv = findViewById(R.id.scoreText);
         //String scoreText = "Ur score" + String.valueOf(MainGame.score);
 
@@ -30,13 +37,33 @@ public class LoseScreen extends AppCompatActivity {
 
         Cursor cursor = getContentResolver().query(Util.URI, new String[]{Util.KEY_ID, Util.KEY_SCORE}, null, null, null, null);
         String scoreDisplay = "";
+        List<String> players = new ArrayList<>();
+        Uri uri = ContactsContract.Contacts.CONTENT_URI;
+        String[] col = new String[] {
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME
+        };
+        Cursor contactCursor = getContentResolver().query(uri, col, null, null, null);
+
+        if (contactCursor.moveToFirst()) {
+            do {
+                players.add(contactCursor.getString(1));
+            } while(contactCursor.moveToNext());
+        }
+
         if (cursor.moveToFirst()) {
             do {
+                int playerIndex = generatePlayers.nextInt(players.size());
+                scoreDisplay += "Player: ";
+                scoreDisplay += players.get(playerIndex);
+                scoreDisplay += ", ";
                 scoreDisplay += "Score: ";
                 scoreDisplay += cursor.getString(1);
                 scoreDisplay += "\n";
             } while (cursor.moveToNext());
         }
+
+
         tv.setText(scoreDisplay);
 
 
