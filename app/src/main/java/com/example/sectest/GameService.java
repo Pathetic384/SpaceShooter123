@@ -32,7 +32,11 @@ public class GameService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "Game service created");
-        startForeground(NOTIFICATION_ID, createNotification());
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            startForeground(NOTIFICATION_ID, createNotification());
+        } else {
+
+        }
         startTime = System.currentTimeMillis();
         timer = new Timer();
     }
