@@ -17,11 +17,17 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.SearchEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static int gameMode = 1;
     public static boolean ini = false;
     MediaPlayer gyu;
+    Spinner spinner;
 
 
     @Override
@@ -76,6 +83,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             });
         gyu.start();
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) gameMode = 1;
+                else if(position == 1) gameMode = 2;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        ArrayList<String> mode = new ArrayList<>();
+        mode.add("Normal Mode");
+        mode.add("Tilting Mode");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mode);
+        adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
+        spinner.setAdapter(adapter);
 
         //sprites
         Button ship1 = (Button) findViewById(R.id.ship1);
@@ -127,20 +154,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 EnemyBullet.ChangeBullet(2);
             }
         });
-        Button mode1 = (Button) findViewById(R.id.mode1);
-        mode1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gameMode = 1;
-            }
-        });
-        Button mode2 = (Button) findViewById(R.id.mode2);
-        mode2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gameMode = 2;
-            }
-        });
+
     }
 
     public void StartGame(View view) {

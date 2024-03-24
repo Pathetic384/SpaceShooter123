@@ -16,8 +16,10 @@
         android:text="Pley"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.294" />
 
     <Button
         android:id="@+id/ship1"
@@ -91,30 +93,6 @@
         app:layout_constraintTop_toBottomOf="@+id/play"
         app:layout_constraintVertical_bias="0.686" />
 
-    <Button
-        android:id="@+id/mode1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Normal mode"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.218"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.405" />
-
-    <Button
-        android:id="@+id/mode2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tilt mode"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.778"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.405" />
-
     <SeekBar
         android:id="@+id/volume"
         android:layout_width="409dp"
@@ -125,5 +103,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.661" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="209dp"
+        android:layout_height="49dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:background="#EF9090"
+        android:paddingRight="16dp"
+        android:popupBackground="#51BDE6"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
