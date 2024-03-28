@@ -52,6 +52,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         serviceIntent = new Intent(this, GameService.class);
+        Button webViewButton = (Button) findViewById(R.id.btn_guide);
+        webViewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                startActivity(intent);
+            }
+        });
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
