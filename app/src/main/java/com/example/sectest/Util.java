@@ -10,6 +10,7 @@ public class Util {
 
     public static final String KEY_ID = "id";
     public static final String KEY_SCORE = "score";
+    public static final String KEY_NAME = "name";
     public static final String AUTHORITY = "com.example.sectest";
     public static final Uri URI = Uri.parse("content://" + AUTHORITY + "/scores");
 }

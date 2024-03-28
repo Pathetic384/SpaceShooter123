@@ -33,7 +33,7 @@ public class ScoreProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        dbHelper.addScore(values.getAsString("score"));
+        dbHelper.addScore(values.getAsString("score"), values.getAsString("name"));
         getContext().getContentResolver().notifyChange(uri, null);
         return uri;
     }

@@ -8,14 +8,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.SearchEvent;
 import android.view.View;
@@ -28,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -43,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static boolean ini = false;
     MediaPlayer gyu;
     Spinner spinner;
-
-
+    Spinner playerList;
+    public static String playerName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,9 +159,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        ArrayList<String> players = new ArrayList<>();
+        Uri uri = ContactsContract.Contacts.CONTENT_URI;
+        String[] col = new String[] {
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME
+        };
+        Cursor contactCursor = getContentResolver().query(uri, col, null, null, null);
+
+        if (contactCursor.moveToFirst()) {
+            do {
+                players.add(contactCursor.getString(1));
+            } while(contactCursor.moveToNext());
+        }
+
+        ArrayAdapter<String> playersArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, players);
+        playersArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        playerList = (Spinner) findViewById(R.id.playerList);
+        playerList.setAdapter(playersArrayAdapter);
     }
 
     public void StartGame(View view) {
+        playerName = (String) playerList.getSelectedItem();
         ini = true;
         gyu.stop();
         MainGame mg = new MainGame(this);

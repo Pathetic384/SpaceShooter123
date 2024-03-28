@@ -31,13 +31,15 @@ public class LoseScreen extends AppCompatActivity {
         //String lastScore = score.getString("score", "");
         ContentValues values = new ContentValues();
         values.put("score", String.valueOf(MainGame.score));
+        values.put("name", MainActivity.playerName);
         getContentResolver().insert(Util.URI, values);
 
         //score.edit().putString("score", lastScore + "\nScore: " + MainGame.score).commit();
 
-        Cursor cursor = getContentResolver().query(Util.URI, new String[]{Util.KEY_ID, Util.KEY_SCORE}, null, null, null, null);
+        Cursor cursor = getContentResolver().query(Util.URI, new String[]{Util.KEY_ID, Util.KEY_SCORE, Util.KEY_NAME}, null, null, null, null);
         String scoreDisplay = "";
         List<String> players = new ArrayList<>();
+        /*
         Uri uri = ContactsContract.Contacts.CONTENT_URI;
         String[] col = new String[] {
                 ContactsContract.Contacts._ID,
@@ -49,13 +51,12 @@ public class LoseScreen extends AppCompatActivity {
             do {
                 players.add(contactCursor.getString(1));
             } while(contactCursor.moveToNext());
-        }
+        } */
 
         if (cursor.moveToFirst()) {
             do {
-                int playerIndex = generatePlayers.nextInt(players.size());
                 scoreDisplay += "Player: ";
-                scoreDisplay += players.get(playerIndex);
+                scoreDisplay += cursor.getString(2);
                 scoreDisplay += ", ";
                 scoreDisplay += "Score: ";
                 scoreDisplay += cursor.getString(1);
