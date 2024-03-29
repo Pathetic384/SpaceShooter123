@@ -1,13 +1,16 @@
 package com.example.sectest;
 
 import static androidx.core.content.ContextCompat.getSystemService;
-
+import android.Manifest;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -194,7 +197,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyu.stop();
         MainGame mg = new MainGame(this);
         setContentView(mg);
-        startService(serviceIntent);
+        // Check permission before starting service
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) == PackageManager.PERMISSION_GRANTED) {
+            startForegroundService(serviceIntent);
+        } else {
+            // Request permission if not granted
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.FOREGROUND_SERVICE}, 1);
+        }
     }
 
     protected void onPause() {
@@ -208,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         super.onPause();
         paused = true;
+
 
     }
 

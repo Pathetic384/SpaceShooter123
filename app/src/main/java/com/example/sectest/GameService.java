@@ -35,7 +35,10 @@ public class GameService extends Service {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             startForeground(NOTIFICATION_ID, createNotification());
         } else {
-
+            // Create notification for Android 13 and above
+            createNotificationChannel();
+            Notification notification = createNotification();
+            startForeground(NOTIFICATION_ID, notification);
         }
         startTime = System.currentTimeMillis();
         timer = new Timer();
@@ -106,6 +109,18 @@ public class GameService extends Service {
         elapsedTime = System.currentTimeMillis() - startTime;
     }
 
+//    private void updateNotification() {
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        Notification notification = new NotificationCompat.Builder(this, "game_service_channel")
+//                .setSmallIcon(R.drawable.bullet1)
+//                .setContentTitle("Time played")
+//                .setContentText("Time: " + formatTime(elapsedTime))
+//                .setPriority(NotificationCompat.PRIORITY_LOW)
+//                .setOngoing(true)
+//                .build();
+//        notificationManager.notify(NOTIFICATION_ID, notification);
+//    }
+
     private void updateNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new NotificationCompat.Builder(this, "game_service_channel")
@@ -117,6 +132,7 @@ public class GameService extends Service {
                 .build();
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
+
 
     private String formatTime(long millis) {
         int hours = (int) (millis / (1000 * 60 * 60));
