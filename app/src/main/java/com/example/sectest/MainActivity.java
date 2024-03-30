@@ -1,10 +1,11 @@
 package com.example.sectest;
-
 import static androidx.core.content.ContextCompat.getSystemService;
 import android.Manifest;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
-
+    private static final String[] difficultyLevels = {"Easy", "Normal", "Hard"};
     private Intent serviceIntent;
     private SensorManager sensorManager;
     private Sensor sensor;
@@ -58,7 +59,45 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
+
+        // Difficulty spinner
+        spinner = (Spinner) findViewById(R.id.difficulty_spinner);
+        ArrayAdapter<String> difficultyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, difficultyLevels);
+        difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(difficultyAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        currentLvl = 1;
+                        Enemy.ChangeShip(1);
+                        EnemyBullet.ChangeBullet(1);
+                        break;
+                    case 1:
+                        currentLvl = 2;
+                        Enemy.ChangeShip(2);
+                        EnemyBullet.ChangeBullet(2);
+                        break;
+                    case 2:
+                        currentLvl = 3;
+                        Enemy.ChangeShip(2);
+                        EnemyBullet.ChangeBullet(2);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        // Start the time ticking service
         serviceIntent = new Intent(this, GameService.class);
+
+        // Webview button
         Button webViewButton = (Button) findViewById(R.id.btn_guide);
         webViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        // Sensor
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
@@ -141,34 +181,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 shipState = 3;
             }
         });
-        //levelel
-        Button lvl1 = (Button) findViewById(R.id.easy);
-        lvl1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentLvl = 1;
-                Enemy.ChangeShip(1);
-                EnemyBullet.ChangeBullet(1);
-            }
-        });
-        Button lvl2 = (Button) findViewById(R.id.normal);
-        lvl2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentLvl = 2;
-                Enemy.ChangeShip(2);
-                EnemyBullet.ChangeBullet(2);
-            }
-        });
-        Button lvl3 = (Button) findViewById(R.id.hard);
-        lvl3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentLvl = 3;
-                Enemy.ChangeShip(2);
-                EnemyBullet.ChangeBullet(2);
-            }
-        });
+//        //levelel
+//        Button lvl1 = (Button) findViewById(R.id.easy);
+//        lvl1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(MainActivity.this, "Easy Mode", Toast.LENGTH_SHORT).show();
+//                currentLvl = 1;
+//                Enemy.ChangeShip(1);
+//                EnemyBullet.ChangeBullet(1);
+//            }
+//        });
+//        Button lvl2 = (Button) findViewById(R.id.normal);
+//        lvl2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(MainActivity.this, "Normal Mode", Toast.LENGTH_SHORT).show();
+//                currentLvl = 2;
+//                Enemy.ChangeShip(2);
+//                EnemyBullet.ChangeBullet(2);
+//            }
+//        });
+//        Button lvl3 = (Button) findViewById(R.id.hard);
+//        lvl3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(MainActivity.this, "Hard Mode", Toast.LENGTH_SHORT).show();
+//                currentLvl = 3;
+//                Enemy.ChangeShip(2);
+//                EnemyBullet.ChangeBullet(2);
+//            }
+//        });
 
         ArrayList<String> players = new ArrayList<>();
         Uri uri = ContactsContract.Contacts.CONTENT_URI;
@@ -202,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             startForegroundService(serviceIntent);
         } else {
             // Request permission if not granted
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.FOREGROUND_SERVICE}, 1);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.FOREGROUND_SERVICE}, 1);
         }
     }
 
@@ -217,8 +260,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         super.onPause();
         paused = true;
-
-
     }
 
     protected void onResume() {

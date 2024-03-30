@@ -134,7 +134,6 @@ public class Character {
             }
             @Override
             public void onFinish() {
-
                 try{
                     Spawning(context);
                 }catch(Exception e){
