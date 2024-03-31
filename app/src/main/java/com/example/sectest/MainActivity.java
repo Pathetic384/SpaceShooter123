@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static float xTilt, yTilt;
     public static int gameMode = 1;
     public static boolean ini = false;
-    MediaPlayer gyu;
+    MediaPlayer punch;
+    MediaPlayer girlfront;
     Spinner spinner;
     Spinner playerList;
     public static String playerName;
@@ -160,7 +161,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
-        gyu = MediaPlayer.create(MainActivity.this, R.raw.gyu);
+        punch = MediaPlayer.create(MainActivity.this, R.raw.punch);
+        girlfront = MediaPlayer.create(MainActivity.this, R.raw.girlfront);
 
         SeekBar seekBar = (SeekBar) findViewById(R.id.volume);
         seekBar.setMax(maxVolume);
@@ -182,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             }
         });
-        gyu.start();
+        punch.start();
 
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -297,7 +299,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void StartGame(View view) {
         playerName = (String) playerList.getSelectedItem();
         ini = true;
-        gyu.stop();
+        punch.stop();
+        girlfront.start();
         MainGame mg = new MainGame(this);
         setContentView(mg);
         // Check permission before starting service
@@ -310,7 +313,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     protected void onPause() {
-        gyu.pause();
+        punch.pause();
+        girlfront.pause();
         if (ini) Character.bulletSound.stop();
         sensorManager.unregisterListener(this);
         Intent bIntent = new Intent(MainActivity.this, GameBroadcastReceiver.class);
@@ -323,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     protected void onResume() {
-        gyu.start();
+        punch.start();
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         if (paused) {
             paused = false;
@@ -337,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     protected void onDestroy() {
+        girlfront.stop();
         super.onDestroy();
 
         // Stop the service when MainActivity is destroyed
