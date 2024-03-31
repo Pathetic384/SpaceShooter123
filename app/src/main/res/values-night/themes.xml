@@ -3,5 +3,12 @@
     <style name="Base.Theme.SecTest" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:itemTextAppearance">@style/ChangeTextColor</item>
+
+    </style>
+    <style name="ChangeTextColor" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
+
+        <item name="android:textColor">#f2d5f2</item>
+        <item name="android:textSize">20dp</item>
     </style>
 </resources>

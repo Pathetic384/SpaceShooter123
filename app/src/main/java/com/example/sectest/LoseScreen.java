@@ -62,8 +62,10 @@ public class LoseScreen extends AppCompatActivity {
                 scoreDisplay += ", ";
                 scoreDisplay += "Score: ";
                 scoreDisplay += cursor.getString(1);
+                scoreDisplay += "\n";
                 scoreDisplay += " Location: ";
                 scoreDisplay += cursor.getString(3);
+                scoreDisplay += "\n";
                 scoreDisplay += "\n";
             } while (cursor.moveToNext());
         }
