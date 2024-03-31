@@ -2,6 +2,7 @@ package com.example.sectest;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 
@@ -19,5 +20,7 @@ public class WebViewActivity extends AppCompatActivity {
         });
         WebView simpleWebView = findViewById(R.id.web_view_xl);
         simpleWebView.loadUrl("https://www.wikihow.com/Play-Games-Well");
+        WebSettings webSettings = simpleWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
     }
 }
