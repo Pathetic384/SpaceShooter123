@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public double playerLong;
     public double playerLat;
 
+    public static String playerLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -298,6 +299,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void StartGame(View view) {
         playerName = (String) playerList.getSelectedItem();
+        double[] loc = getPlayerLocation();
+        playerLocation = "long: " + loc[0] + ", lat: " + loc[1];
         ini = true;
         punch.stop();
         girlfront.start();

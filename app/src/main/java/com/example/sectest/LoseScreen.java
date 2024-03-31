@@ -33,6 +33,7 @@ public class LoseScreen extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put("score", String.valueOf(MainGame.score));
         values.put("name", MainActivity.playerName);
+        values.put("location", MainActivity.playerLocation);
         getContentResolver().insert(Util.URI, values);
 
         //score.edit().putString("score", lastScore + "\nScore: " + MainGame.score).commit();
@@ -62,6 +63,7 @@ public class LoseScreen extends AppCompatActivity {
                 scoreDisplay += "Score: ";
                 scoreDisplay += cursor.getString(1);
                 scoreDisplay += " Location: ";
+                scoreDisplay += cursor.getString(3);
                 scoreDisplay += "\n";
             } while (cursor.moveToNext());
         }
