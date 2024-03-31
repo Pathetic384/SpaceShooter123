@@ -1,30 +1,28 @@
 package com.example.sectest;
-import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.Manifest;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.ContactsContract;
-import android.util.Log;
-import android.view.SearchEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -32,12 +30,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
     private static final String[] difficultyLevels = {"Easy", "Normal", "Hard"};
     private Intent serviceIntent;
     private SensorManager sensorManager;
@@ -53,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Spinner spinner;
     Spinner playerList;
     public static String playerName;
+    public static LocationManager locationManager;
+    public double playerLong;
+    public double playerLat;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,34 +153,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         gyu = MediaPlayer.create(MainActivity.this, R.raw.gyu);
 
-        SeekBar seekBar = (SeekBar)findViewById(R.id.volume);
-            seekBar.setMax(maxVolume);
-            seekBar.setProgress(currentVolume);
+        SeekBar seekBar = (SeekBar) findViewById(R.id.volume);
+        seekBar.setMax(maxVolume);
+        seekBar.setProgress(currentVolume);
 
-            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-                }
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+            }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
-                }
+            }
 
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
-                }
-            });
+            }
+        });
         gyu.start();
 
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0) gameMode = 1;
-                else if(position == 1) gameMode = 2;
+                if (position == 0) gameMode = 1;
+                else if (position == 1) gameMode = 2;
             }
 
             @Override
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         ArrayList<String> players = new ArrayList<>();
         Uri uri = ContactsContract.Contacts.CONTENT_URI;
-        String[] col = new String[] {
+        String[] col = new String[]{
                 ContactsContract.Contacts._ID,
                 ContactsContract.Contacts.DISPLAY_NAME
         };
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (contactCursor.moveToFirst()) {
             do {
                 players.add(contactCursor.getString(1));
-            } while(contactCursor.moveToNext());
+            } while (contactCursor.moveToNext());
         }
 
         ArrayAdapter<String> playersArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, players);
@@ -268,6 +268,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         playerList = (Spinner) findViewById(R.id.playerList);
         playerList.setAdapter(playersArrayAdapter);
+
+        //location
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
+
     }
 
     public void StartGame(View view) {
@@ -281,13 +296,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             startForegroundService(serviceIntent);
         } else {
             // Request permission if not granted
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.FOREGROUND_SERVICE}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.FOREGROUND_SERVICE}, 1);
         }
     }
 
     protected void onPause() {
         gyu.pause();
-        if(ini) Character.bulletSound.stop();
+        if (ini) Character.bulletSound.stop();
         sensorManager.unregisterListener(this);
         Intent bIntent = new Intent(MainActivity.this, GameBroadcastReceiver.class);
         bIntent.setAction("gameCast");
@@ -301,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         gyu.start();
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
-        if(paused) {
+        if (paused) {
             paused = false;
             Intent bIntent = new Intent(MainActivity.this, GameBroadcastReceiver.class);
             bIntent.setAction("gameCast");
@@ -310,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         super.onResume();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -328,4 +344,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    public void onLocationChanged(Location location) {
+        playerLong = location.getLongitude();
+        playerLat = location.getLatitude();
+    }
+
+    public double[] getPlayerLocation() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        double[] latLong = new double[2];
+        onLocationChanged(location);
+        latLong[0] = playerLat;
+        latLong[1] = playerLong;
+        return latLong;
+    }
+
 }
