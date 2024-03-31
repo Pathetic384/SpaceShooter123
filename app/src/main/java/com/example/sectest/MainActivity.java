@@ -1,4 +1,5 @@
 package com.example.sectest;
+import com.example.sectest.R;
 import static androidx.core.content.ContextCompat.getSystemService;
 import android.Manifest;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,14 +25,18 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.SearchEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -96,39 +101,77 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
-        // Difficulty spinner
-        spinner = (Spinner) findViewById(R.id.difficulty_spinner);
-        ArrayAdapter<String> difficultyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, difficultyLevels);
-        difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(difficultyAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        currentLvl = 1;
-                        Enemy.ChangeShip(1);
-                        EnemyBullet.ChangeBullet(1);
-                        break;
-                    case 1:
-                        currentLvl = 2;
-                        Enemy.ChangeShip(2);
-                        EnemyBullet.ChangeBullet(2);
-                        break;
-                    case 2:
-                        currentLvl = 3;
-                        Enemy.ChangeShip(2);
-                        EnemyBullet.ChangeBullet(2);
-                        break;
-                }
-            }
+//        // Difficulty spinner
+//        spinner = (Spinner) findViewById(R.id.difficulty_spinner);
+//        ArrayAdapter<String> difficultyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, difficultyLevels);
+//        difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(difficultyAdapter);
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                switch (position) {
+//                    case 0:
+//                        currentLvl = 1;
+//                        Enemy.ChangeShip(1);
+//                        EnemyBullet.ChangeBullet(1);
+//                        break;
+//                    case 1:
+//                        currentLvl = 2;
+//                        Enemy.ChangeShip(2);
+//                        EnemyBullet.ChangeBullet(2);
+//                        break;
+//                    case 2:
+//                        currentLvl = 3;
+//                        Enemy.ChangeShip(2);
+//                        EnemyBullet.ChangeBullet(2);
+//                        break;
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
 
+        // Difficulty button with popup menu for selecting difficulty level (easy, normal, hard)
+        TextView difficultyText = (TextView) findViewById(R.id.difficulty_text);
+        Button difficultyButton = (Button) findViewById(R.id.difficulty_button);
+        difficultyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu difficultyMenu = new PopupMenu(MainActivity.this, difficultyButton);
+                difficultyMenu.getMenuInflater().inflate(R.menu.difficulty_menu, difficultyMenu.getMenu());
+                difficultyMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.difficulty_easy:
+                                currentLvl = 1;
+                                Enemy.ChangeShip(1);
+                                EnemyBullet.ChangeBullet(1);
+                                difficultyText.setText("Difficulty: Easy");
+                                break;
+                            case R.id.difficulty_medium:
+                                currentLvl = 2;
+                                Enemy.ChangeShip(2);
+                                EnemyBullet.ChangeBullet(2);
+                                difficultyText.setText("Difficulty: Medium");
+                                break;
+                            case R.id.difficulty_hard:
+                                currentLvl = 3;
+                                Enemy.ChangeShip(2);
+                                EnemyBullet.ChangeBullet(2);
+                                difficultyText.setText("Difficulty: Hard");
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                difficultyMenu.show();
             }
         });
-
 
         // Start the time ticking service
         serviceIntent = new Intent(this, GameService.class);
