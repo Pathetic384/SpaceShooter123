@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 super.onPageScrollStateChanged(state);
             }
         });
+        
 
         // Difficulty spinner
         spinner = (Spinner) findViewById(R.id.difficulty_spinner);
