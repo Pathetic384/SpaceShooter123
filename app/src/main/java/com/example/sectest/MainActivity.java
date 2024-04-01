@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void StartGame(View view) {
         playerName = (String) playerList.getSelectedItem();
         double[] loc = getPlayerLocation();
-        playerLocation = "long: " + loc[0] + ", lat: " + loc[1];
+        playerLocation = "lat: " + loc[0] + ", long: " + loc[1];
         ini = true;
         punch.stop();
         girlfront.start();
