@@ -27,18 +27,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Menu"
-        app:layout_constraintBottom_toTopOf="@+id/scoreText"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scoreText"
         app:layout_constraintVertical_bias="0.251" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="246dp"
         android:layout_height="52dp"
-        android:background="#7E96ED"
+        android:background="@drawable/mybutton"
         android:text="Top 3 Players"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
@@ -46,6 +46,6 @@
         app:layout_constraintBottom_toTopOf="@+id/scoreText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menuButton" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
