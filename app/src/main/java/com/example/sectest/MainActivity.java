@@ -2,6 +2,9 @@ package com.example.sectest;
 
 import android.Manifest;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -35,6 +38,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
     private static final String[] difficultyLevels = {"Easy", "Normal", "Hard"};
@@ -58,11 +64,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public double playerLat;
 
     public static String playerLocation;
+    private boolean isNotificationPermissionGranted = false;
+    private boolean isFineLocationPermissionGranted = false;
+    private boolean isReadContactsPermissionGranted = false;
+    private boolean isWriteContactPermissionGranted = false;
+    List<String> permissionRequest = new ArrayList<String>();
+
+    private ActivityResultLauncher<String[]> requestPermissionLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
+                    @Override
+                    public void onActivityResult(Map<String, Boolean> o) {
+                        if (o.get(Manifest.permission.POST_NOTIFICATIONS) != null) {
+                            isNotificationPermissionGranted = o.get(Manifest.permission.POST_NOTIFICATIONS);
+                        }
+                        if (o.get(Manifest.permission.READ_CONTACTS) != null) {
+                            isReadContactsPermissionGranted = o.get(Manifest.permission.READ_CONTACTS);
+                        }
+                        if (o.get(Manifest.permission.ACCESS_FINE_LOCATION) != null) {
+                            isFineLocationPermissionGranted = o.get(Manifest.permission.ACCESS_FINE_LOCATION);
+                        }
+                        if (o.get(Manifest.permission.WRITE_CONTACTS) != null) {
+                            isWriteContactPermissionGranted = o.get(Manifest.permission.WRITE_CONTACTS);
+                        }
+                    }
+                });
+        requestPermission();
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
+
 
         //ViewPager2 for ship selection
         ViewPager2 viewPager2 = findViewById(R.id.ship_view_pager);
@@ -283,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //location
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -386,4 +421,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return latLong;
     }
 
+    private void requestPermission() {
+        isFineLocationPermissionGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        isReadContactsPermissionGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
+        isWriteContactPermissionGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED;
+        isNotificationPermissionGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+        if (!isNotificationPermissionGranted){
+            permissionRequest.add(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        if (!isReadContactsPermissionGranted){
+
+            permissionRequest.add(Manifest.permission.READ_CONTACTS);
+        }
+        if (!isWriteContactPermissionGranted){
+            permissionRequest.add(Manifest.permission.WRITE_CONTACTS);
+        }
+        if (!isFineLocationPermissionGranted){
+            permissionRequest.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (!permissionRequest.isEmpty()) {
+            requestPermissionLauncher.launch(permissionRequest.toArray(new String[0]));
+        }
+    }
 }
