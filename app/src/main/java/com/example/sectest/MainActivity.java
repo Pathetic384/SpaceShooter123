@@ -71,23 +71,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
         String[] permissions = {Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.POST_NOTIFICATIONS};
-        boolean allPermissionsGranted = true;
-        for (String permission : permissions) {
-            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                allPermissionsGranted = false;
-                break;
+        boolean allPermissionsGranted = false;
+        while (!allPermissionsGranted) {
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
+            allPermissionsGranted = true;
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                }
             }
-        }
-        while(!allPermissionsGranted) {
-
-                ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
-            allPermissionsGranted=true;
         }
 
         //ViewPager2 for ship selection
