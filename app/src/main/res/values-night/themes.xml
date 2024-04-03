@@ -4,6 +4,7 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
         <item name="android:itemTextAppearance">@style/ChangeTextColor</item>
+        <item name="android:itemBackground">#4f85db</item>
 
     </style>
     <style name="ChangeTextColor" parent="@android:style/TextAppearance.Widget.IconMenu.Item">

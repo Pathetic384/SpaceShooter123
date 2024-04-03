@@ -84,8 +84,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 break;
             }
         }
-        if (!allPermissionsGranted) {
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
+        while(!allPermissionsGranted) {
+
+                ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
+            allPermissionsGranted=true;
         }
 
         //ViewPager2 for ship selection
