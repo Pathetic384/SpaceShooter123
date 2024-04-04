@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public static String playerLocation;
     private static final int REQUEST_PERMISSIONS = 1;
+    boolean allPermissionsGranted = false;
 
     private ActivityResultLauncher<String[]> requestPermissionLauncher;
     private NominatimService nominatimService;
@@ -81,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         String[] permissions = {Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.POST_NOTIFICATIONS};
-        boolean allPermissionsGranted = false;
         while (!allPermissionsGranted) {
             ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
             allPermissionsGranted = true;
