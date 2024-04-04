@@ -27,6 +27,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -42,6 +43,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
     private static final String[] difficultyLevels = {"Easy", "Normal", "Hard"};
@@ -68,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final int REQUEST_PERMISSIONS = 1;
 
     private ActivityResultLauncher<String[]> requestPermissionLauncher;
-
+    private GeoCodingService geoCodingService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -325,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         playerName = (String) playerList.getSelectedItem();
         double[] loc = getPlayerLocation();
         playerLocation = "lat: " + loc[0] + ", long: " + loc[1];
+        getActualAddress();
         ini = true;
         punch.stop();
         girlfront.start();
@@ -424,5 +430,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
 
         }
+    }
+
+    public void getActualAddress() {
+        geoCodingService = GeoCodingClient.getClient().create(GeoCodingService.class);
+
+        double latitude = playerLat;
+        double longitude = playerLong;
+
+        String latlng = latitude + "," + longitude;
+        String apiKey = "AIzaSyDeLC_w60OF-co6P-WMJB5whIqnyzXyw2M";
+
+        Call<GeoCodeResponse> call = geoCodingService.getAddressFromCoordinates(latlng, apiKey);
+        call.enqueue(new Callback<GeoCodeResponse>() {
+            @Override
+            public void onResponse(Call<GeoCodeResponse> call, Response<GeoCodeResponse> response) {
+                if (response.isSuccessful()) {
+                    GeoCodeResponse geoCodeResponse = response.body();
+                    if (geoCodeResponse != null && geoCodeResponse.getResults().size() > 0) {
+                        String address = geoCodeResponse.getResults().get(0).getFormatted_address();
+                        Log.d("Address", address);
+                        playerLocation = address;
+                    }
+                } else {
+                    Log.e("Error", "Response was not successful.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GeoCodeResponse> call, Throwable t) {
+                Log.e("Error", "Failed to get response from server: " + t.getMessage());
+            }
+        });
+
     }
 }
