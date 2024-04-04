@@ -14,8 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class LoseScreen extends AppCompatActivity {
@@ -25,6 +28,8 @@ public class LoseScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lose_screen);
         Random generatePlayers = new Random();
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         TextView tv = findViewById(R.id.scoreText);
         //String scoreText = "Ur score" + String.valueOf(MainGame.score);
 
@@ -34,6 +39,7 @@ public class LoseScreen extends AppCompatActivity {
         values.put("score", String.valueOf(MainGame.score));
         values.put("name", MainActivity.playerName);
         values.put("location", MainActivity.playerLocation);
+        values.put("time", currentDate + " " + currentTime);
         getContentResolver().insert(Util.URI, values);
 
         //score.edit().putString("score", lastScore + "\nScore: " + MainGame.score).commit();
@@ -65,6 +71,9 @@ public class LoseScreen extends AppCompatActivity {
                 scoreDisplay += "\n";
                 scoreDisplay += " Location: ";
                 scoreDisplay += cursor.getString(3);
+                scoreDisplay += "\n";
+                scoreDisplay += " Datetime: ";
+                scoreDisplay += cursor.getString(4);
                 scoreDisplay += "\n";
                 scoreDisplay += "\n";
             } while (cursor.moveToNext());

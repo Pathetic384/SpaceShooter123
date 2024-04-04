@@ -17,7 +17,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + Util.KEY_ID + " INTEGER PRIMARY KEY,"
                 + Util.KEY_SCORE + " TEXT,"
                 + Util.KEY_NAME + " TEXT,"
-                + Util.KEY_LOCATION + " TEXT" + ")";
+                + Util.KEY_LOCATION + " TEXT,"
+                + Util.KEY_TIME + " TEXT" + ")";
         db.execSQL(CREATE_CONTACT_TABLE);
     }
 
@@ -28,12 +29,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addScore(String score, String name, String location) {
+    public void addScore(String score, String name, String location, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(Util.KEY_SCORE, score);
         values.put(Util.KEY_NAME, name);
         values.put(Util.KEY_LOCATION, location);
+        values.put(Util.KEY_TIME, time);
         db.insert(Util.TABLE_NAME, null, values);
         db.close();
     }
