@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final int REQUEST_PERMISSIONS = 1;
 
     private ActivityResultLauncher<String[]> requestPermissionLauncher;
-    private GeoCodingService geoCodingService;
+    private NominatimService nominatimService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -433,24 +433,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void getActualAddress() {
-        geoCodingService = GeoCodingClient.getClient().create(GeoCodingService.class);
 
+
+        nominatimService = NominatimClient.getClient().create(NominatimService.class);
         double latitude = playerLat;
         double longitude = playerLong;
 
-        String latlng = latitude + "," + longitude;
-        String apiKey = "AIzaSyDeLC_w60OF-co6P-WMJB5whIqnyzXyw2M";
-
-        Call<GeoCodeResponse> call = geoCodingService.getAddressFromCoordinates(latlng, apiKey);
-        call.enqueue(new Callback<GeoCodeResponse>() {
+        Call<NominatimResponse> call = nominatimService.reverseGeocode("json", latitude, longitude);
+        call.enqueue(new Callback<NominatimResponse>() {
             @Override
-            public void onResponse(Call<GeoCodeResponse> call, Response<GeoCodeResponse> response) {
+            public void onResponse(Call<NominatimResponse> call, Response<NominatimResponse> response) {
                 if (response.isSuccessful()) {
-                    GeoCodeResponse geoCodeResponse = response.body();
-                    if (geoCodeResponse != null && geoCodeResponse.getResults().size() > 0) {
-                        String address = geoCodeResponse.getResults().get(0).getFormatted_address();
-                        Log.d("Address", address);
+                    NominatimResponse nominatimResponse = response.body();
+                    if (nominatimResponse != null) {
+                        String address = nominatimResponse.getDisplay_name();
                         playerLocation = address;
+                        Log.d("Address", address);
+
                     }
                 } else {
                     Log.e("Error", "Response was not successful.");
@@ -458,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
 
             @Override
-            public void onFailure(Call<GeoCodeResponse> call, Throwable t) {
+            public void onFailure(Call<NominatimResponse> call, Throwable t) {
                 Log.e("Error", "Failed to get response from server: " + t.getMessage());
             }
         });

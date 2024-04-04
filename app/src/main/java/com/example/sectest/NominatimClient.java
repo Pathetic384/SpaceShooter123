@@ -2,8 +2,8 @@ package com.example.sectest;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class GeoCodingClient {
-    private static final String BASE_URL = "https://maps.googleapis.com/";
+public class NominatimClient {
+    private static final String BASE_URL = "https://nominatim.openstreetmap.org/";
 
     private static Retrofit retrofit = null;
 
