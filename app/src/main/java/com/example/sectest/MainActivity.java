@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+        //audio
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -197,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         seekBar.setMax(maxVolume);
         seekBar.setProgress(currentVolume);
 
+        //update volume
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -228,6 +230,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             }
         });
+
+        //select gamemode
         ArrayList<String> mode = new ArrayList<>();
         mode.add("Normal Mode");
         mode.add("Tilting Mode");
@@ -235,60 +239,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
         spinner.setAdapter(adapter);
 
-//        //sprites
-//        Button ship1 = (Button) findViewById(R.id.ship1);
-//        ship1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                shipState = 1;
-//            }
-//        });
-//        Button ship2 = (Button) findViewById(R.id.ship2);
-//        ship2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                shipState = 2;
-//            }
-//        });
-//        Button ship3 = (Button) findViewById(R.id.ship3);
-//        ship3.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                shipState = 3;
-//            }
-//        });
-//        //levelel
-//        Button lvl1 = (Button) findViewById(R.id.easy);
-//        lvl1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, "Easy Mode", Toast.LENGTH_SHORT).show();
-//                currentLvl = 1;
-//                Enemy.ChangeShip(1);
-//                EnemyBullet.ChangeBullet(1);
-//            }
-//        });
-//        Button lvl2 = (Button) findViewById(R.id.normal);
-//        lvl2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, "Normal Mode", Toast.LENGTH_SHORT).show();
-//                currentLvl = 2;
-//                Enemy.ChangeShip(2);
-//                EnemyBullet.ChangeBullet(2);
-//            }
-//        });
-//        Button lvl3 = (Button) findViewById(R.id.hard);
-//        lvl3.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, "Hard Mode", Toast.LENGTH_SHORT).show();
-//                currentLvl = 3;
-//                Enemy.ChangeShip(2);
-//                EnemyBullet.ChangeBullet(2);
-//            }
-//        });
 
+        //get username
         ArrayList<String> players = new ArrayList<>();
         Uri uri = ContactsContract.Contacts.CONTENT_URI;
         String[] col = new String[]{
@@ -303,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             } while (contactCursor.moveToNext());
         }
 
+        //select usename
         ArrayAdapter<String> playersArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, players);
         playersArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -313,13 +266,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
@@ -346,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     protected void onPause() {
+        //pause music & send sroadcast intent
         punch.pause();
         girlfront.pause();
         if (ini) Character.bulletSound.stop();
@@ -360,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     protected void onResume() {
+        //resume music and send broadcast intent
         punch.start();
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         if (paused) {
@@ -383,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        //get tilting value
         xTilt = event.values[0];
         yTilt = event.values[1];
     }
@@ -392,20 +342,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    //update long lat
     public void onLocationChanged(Location location) {
         playerLong = location.getLongitude();
         playerLat = location.getLatitude();
     }
 
+    //get long lat
     public double[] getPlayerLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return null;
         }
         Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -417,6 +362,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
+    //request permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -432,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    //get irl location
     public void getActualAddress() {
 
 

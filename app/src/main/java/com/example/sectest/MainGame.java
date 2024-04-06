@@ -99,7 +99,7 @@ public class MainGame extends View {
         scorePaint.setTextSize(80);
         scorePaint.setTextAlign(Paint.Align.LEFT);
 
-
+        //reset stage
         Character.resetShip();
         for(int i = 0;i<enemies.size();i++) {
             enemies.get(i).StopShooting();
@@ -109,7 +109,7 @@ public class MainGame extends View {
         e_bullets.clear();
         explosions.clear();
 
-
+        //start spamming
         Enemy.SpawnEnemy( context);
         Character.SpawnBullet(500, context);
 
@@ -268,6 +268,7 @@ public class MainGame extends View {
     }
 
 
+    //tilt da screen
     int xDown = 0;
     int yDown = 0;
     @Override
