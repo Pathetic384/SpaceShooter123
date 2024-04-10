@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             } while (contactCursor.moveToNext());
         }
 
-        //select usename
+        //select username
         ArrayAdapter<String> playersArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, players);
         playersArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 

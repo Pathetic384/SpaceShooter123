@@ -109,17 +109,6 @@ public class GameService extends Service {
         elapsedTime = System.currentTimeMillis() - startTime;
     }
 
-//    private void updateNotification() {
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        Notification notification = new NotificationCompat.Builder(this, "game_service_channel")
-//                .setSmallIcon(R.drawable.bullet1)
-//                .setContentTitle("Time played")
-//                .setContentText("Time: " + formatTime(elapsedTime))
-//                .setPriority(NotificationCompat.PRIORITY_LOW)
-//                .setOngoing(true)
-//                .build();
-//        notificationManager.notify(NOTIFICATION_ID, notification);
-//    }
 
     private void updateNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

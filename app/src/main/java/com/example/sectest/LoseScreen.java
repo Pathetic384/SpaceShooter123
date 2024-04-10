@@ -27,14 +27,11 @@ public class LoseScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lose_screen);
-        Random generatePlayers = new Random();
+
         String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         TextView tv = findViewById(R.id.scoreText);
-        //String scoreText = "Ur score" + String.valueOf(MainGame.score);
 
-        //SharedPreferences score = getSharedPreferences("score", MODE_PRIVATE);
-        //String lastScore = score.getString("score", "");
         ContentValues values = new ContentValues();
         values.put("score", String.valueOf(MainGame.score));
         values.put("name", MainActivity.playerName);
@@ -42,24 +39,9 @@ public class LoseScreen extends AppCompatActivity {
         values.put("time", currentDate + " " + currentTime);
         getContentResolver().insert(Util.URI, values);
 
-        //score.edit().putString("score", lastScore + "\nScore: " + MainGame.score).commit();
 
         Cursor cursor = getContentResolver().query(Util.URI, new String[]{Util.KEY_ID, Util.KEY_SCORE, Util.KEY_NAME}, null, null, null, null);
         String scoreDisplay = "";
-        List<String> players = new ArrayList<>();
-        /*
-        Uri uri = ContactsContract.Contacts.CONTENT_URI;
-        String[] col = new String[] {
-                ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME
-        };
-        Cursor contactCursor = getContentResolver().query(uri, col, null, null, null);
-
-        if (contactCursor.moveToFirst()) {
-            do {
-                players.add(contactCursor.getString(1));
-            } while(contactCursor.moveToNext());
-        } */
 
         if (cursor.moveToFirst()) {
             do {
